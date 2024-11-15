@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
 import pandas as pd
 from datetime import datetime
 import os
 
-app = Flask(__name__)  # Define the Flask app instance
-CORS(app)  # Enable CORS after creating the app instance
+app = Flask(__name__)
+CORS(app)
 
 # File to store attendance
 attendance_file = "attendance_records.xlsx"
@@ -30,18 +30,12 @@ def submit_attendance():
         "Status": data["status"],
     }
     try:
-        # Load the existing Excel file into a DataFrame
         df = pd.read_excel(attendance_file)
-
-        # Create a new DataFrame for the new entry
-        new_df = pd.DataFrame([new_entry])
-
-        # Concatenate the existing DataFrame with the new entry
-        df = pd.concat([df, new_df], ignore_index=True)
-
-        # Save back to the Excel file
+        df = pd.concat([df, pd.DataFrame([new_entry])], ignore_index=True)
         df.to_excel(attendance_file, index=False)
         return jsonify({"message": "Attendance marked successfully!"}), 200
     except Exception as e:
         return jsonify({"message": f"Error: {e}"}), 500
 
+if __name__ == "__main__":
+    app.run(debug=True)
